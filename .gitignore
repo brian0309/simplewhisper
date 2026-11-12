@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Environments
+.venv/
+venv/
+env/
+
+# Tooling
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+scripts/version_info.txt
+
+# Local transcripts and media
+*.srt
+*.vtt
+*.tsv
+!tests/**/*.srt
+!tests/**/*.vtt
+!tests/**/*.tsv
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

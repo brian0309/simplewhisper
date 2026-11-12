@@ -1,0 +1,60 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "simplewhisper"
+version = "0.1.0"
+description = "Local, offline speech-to-text CLI powered by Whisper (faster-whisper)"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+keywords = ["whisper", "speech-to-text", "transcription", "subtitles", "cli", "offline"]
+classifiers = [
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Multimedia :: Sound/Audio :: Speech",
+]
+dependencies = [
+    "faster-whisper>=1.1.0",
+    "sherpa-onnx>=1.10.28",
+]
+
+[project.optional-dependencies]
+gui = [
+    "tkinterdnd2>=0.4.2",
+]
+build = [
+    "pyinstaller>=6.6",
+]
+dev = [
+    "pytest>=8",
+    "ruff>=0.6",
+    "pillow>=10",
+    "resvg-py>=0.5",
+]
+
+[project.scripts]
+simplewhisper = "simplewhisper.cli:main"
+simplewhisper-gui = "simplewhisper.gui:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# The window icon lives inside the package so the GUI can find it
+# wherever the package is installed.
+[tool.setuptools.package-data]
+simplewhisper = ["assets/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "W", "I"]

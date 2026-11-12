@@ -1,0 +1,97 @@
+name: Manual Build and Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version (example: 0.1.0)"
+        required: true
+        type: string
+      publish:
+        description: "Publish GitHub Release"
+        required: true
+        default: false
+        type: boolean
+
+jobs:
+  build:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Check the version
+        shell: pwsh
+        run: |
+          $pyproject = Get-Content pyproject.toml -Raw
+          $match = [regex]::Match($pyproject, '(?m)^version\s*=\s*"([^"]+)"')
+          if (-not $match.Success) {
+            throw "No version found in pyproject.toml"
+          }
+          $projectVersion = $match.Groups[1].Value
+          if ($projectVersion -ne '${{ inputs.version }}') {
+            throw "Version mismatch: pyproject.toml is $projectVersion, the workflow input is ${{ inputs.version }}"
+          }
+          Write-Host "Building version $projectVersion"
+
+      - name: Create the virtual environment
+        shell: pwsh
+        run: python -m venv .venv
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: |
+          choco install innosetup -y --no-progress
+          $iscc = Get-Command iscc -ErrorAction Stop
+          & $iscc.Source /?
+          if ($LASTEXITCODE -ne 0) {
+            # ISCC /? returns 1 after printing help on some runners; treat that as success.
+            Write-Host "ISCC is installed and available at $($iscc.Source)"
+            $global:LASTEXITCODE = 0
+          }
+
+      - name: Build the installer
+        shell: cmd
+        env:
+          SIGN_MODE: none
+          BUILD_MODE: standalone
+          BUILD_INSTALLER: 1
+        run: build.bat --no-pause
+
+      - name: Upload the installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: simplewhisper-windows-installer
+          path: build/installer/simplewhisper-setup.exe
+          if-no-files-found: error
+
+  publish:
+    if: ${{ inputs.publish }}
+    needs: build
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download the installer artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: simplewhisper-windows-installer
+          path: release
+
+      - name: Create the GitHub release and upload the asset
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ inputs.version }}
+          name: SimpleWhisper v${{ inputs.version }}
+          generate_release_notes: true
+          files: release/simplewhisper-setup.exe

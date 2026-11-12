@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-label="SimpleWhisper">
+  <defs>
+    <linearGradient id="wa-bg" x1="32" y1="16" x2="224" y2="240" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#6366F1"/>
+      <stop offset="1" stop-color="#8B5CF6"/>
+    </linearGradient>
+  </defs>
+
+  <!-- rounded app tile -->
+  <rect width="256" height="256" rx="56" fill="url(#wa-bg)"/>
+
+  <!-- speech bubble with a tail, sitting in the middle of the tile -->
+  <path fill="#FFFFFF" d="M78 72 H178 A30 30 0 0 1 208 102 V150 A30 30 0 0 1 178 180 H116 L78 200 L88 180 H78 A30 30 0 0 1 48 150 V102 A30 30 0 0 1 78 72 Z"/>
+
+  <!-- waveform, knocked out of the bubble -->
+  <g fill="url(#wa-bg)">
+    <rect x="84" y="108" width="14" height="36" rx="7"/>
+    <rect x="109" y="94" width="14" height="64" rx="7"/>
+    <rect x="134" y="82" width="14" height="88" rx="7"/>
+    <rect x="159" y="102" width="14" height="48" rx="7"/>
+  </g>
+</svg>
